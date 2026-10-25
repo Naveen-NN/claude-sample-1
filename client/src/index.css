@@ -1,0 +1,45 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #fff;
+  --text: #1d2330;
+  --muted: #6b7280;
+  --border: #e3e6eb;
+  --accent: #2563eb;
+  --danger: #dc2626;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+body { margin: 0; }
+.container { max-width: 760px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+.brand { font-size: 1.5rem; font-weight: 700; color: var(--text); text-decoration: none; }
+a { color: var(--accent); }
+h1, h2 { margin: 0 0 0.25rem; }
+.card h1, .card h2 { text-transform: capitalize; }
+.card h2 { font-size: 1.1rem; }
+.card a h2 { color: var(--text); }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.muted { color: var(--muted); font-size: 0.875rem; margin: 0.25rem 0; }
+.body { white-space: pre-line; }
+.user-details { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem 1rem; margin: 1rem 0 0; }
+.user-details dt { color: var(--muted); font-size: 0.875rem; }
+.user-details dd { margin: 0; }
+.error { color: var(--danger); }
+.actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+button, .button {
+  font: inherit; font-size: 0.9rem; padding: 0.45rem 0.9rem; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; display: inline-block;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+.secondary { background: transparent; color: var(--accent); }
+.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+button.link { background: none; border: none; color: inherit; font-size: 1.2rem; padding: 0 0.25rem; }
+.notice { display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 0.5rem 0.75rem; margin-bottom: 1rem; }
+.toolbar { margin-bottom: 1rem; }
+select, input, textarea { font: inherit; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; }
+.form label { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 0.75rem; }
+.pager { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem; }
+.comments { list-style: none; padding: 0; }
+.comments li { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
+.comments p { margin: 0.25rem 0 0; }
