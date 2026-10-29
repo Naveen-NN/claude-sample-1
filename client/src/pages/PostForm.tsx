@@ -9,9 +9,13 @@ import { DEMO_NOTE, isLocalOnly } from "../usePostActions";
 
 const empty: PostInput = { userId: 1, title: "", body: "" };
 
+/** Keyed on the route id so switching between new/edit or posts remounts with fresh state. */
 export function PostForm() {
-  const params = useParams();
-  const editId = params.id ? Number(params.id) : undefined;
+  const { id } = useParams();
+  return <PostFormBody key={id ?? "new"} editId={id ? Number(id) : undefined} />;
+}
+
+function PostFormBody({ editId }: { editId?: number }) {
   const navigate = useNavigate();
   const { findLocal, addCreated, saveEdited, setNotice } = useStore();
 
@@ -23,12 +27,16 @@ export function PostForm() {
 
   useEffect(() => {
     if (editId === undefined) return;
+    let cancelled = false;
     const local = findLocal(editId);
     const load = local ? Promise.resolve(local) : getPost(editId);
     load
-      .then(({ userId, title, body }) => setValues({ userId, title, body }))
-      .catch(setLoadError)
-      .finally(() => setLoading(false));
+      .then(({ userId, title, body }) => !cancelled && setValues({ userId, title, body }))
+      .catch((err: Error) => !cancelled && setLoadError(err))
+      .finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 

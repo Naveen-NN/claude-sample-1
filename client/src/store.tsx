@@ -1,5 +1,7 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Post } from "./types";
+
+const NOTICE_MS = 6000;
 
 /**
  * jsonplaceholder fakes writes, so changes are kept here and layered over
@@ -25,6 +27,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [edited, setEdited] = useState<Record<number, Post>>({});
   const [deleted, setDeleted] = useState<Set<number>>(new Set());
   const [notice, setNotice] = useState<string>();
+
+  // Auto-dismiss so a notice (especially a failure) doesn't linger across pages.
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(undefined), NOTICE_MS);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   const addCreated = useCallback(
     (post: Post) => {

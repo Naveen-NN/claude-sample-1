@@ -9,10 +9,16 @@ import { useDeletePost } from "../usePostActions";
 
 const PAGE_SIZE = 10;
 
+/** The server only accepts positive integers; anything else falls back to the default. */
+function positiveInt(raw: string | null): number | undefined {
+  const n = Number(raw);
+  return Number.isInteger(n) && n > 0 ? n : undefined;
+}
+
 export function PostsList() {
   const [params, setParams] = useSearchParams();
-  const page = Math.max(1, Number(params.get("page")) || 1);
-  const userId = Number(params.get("userId")) || undefined;
+  const page = positiveInt(params.get("page")) ?? 1;
+  const userId = positiveInt(params.get("userId"));
   const { created, applyLocal, deleted } = useStore();
   const { remove, deletingId } = useDeletePost();
 
@@ -44,11 +50,15 @@ export function PostsList() {
       </div>
 
       {error && <ErrorMessage error={error} />}
-      {loading && !data && <Loading />}
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} onDelete={remove} deleting={deletingId === post.id} />
-      ))}
-      {data && posts.length === 0 && <p className="muted">No posts.</p>}
+      {/* Hide the previous page/filter's posts while the new ones load. */}
+      {loading ? (
+        <Loading />
+      ) : (
+        posts.map((post) => (
+          <PostCard key={post.id} post={post} onDelete={remove} deleting={deletingId === post.id} />
+        ))
+      )}
+      {!loading && data && posts.length === 0 && <p className="muted">No posts.</p>}
 
       <nav className="pager">
         <button onClick={() => update({ page: page - 1 })} disabled={page <= 1 || loading}>

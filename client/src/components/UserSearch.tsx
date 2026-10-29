@@ -62,6 +62,9 @@ export function UserSearch({ value, onChange, placeholder = "Search users…", a
       return;
     }
     const controller = new AbortController();
+    // Drop the previous query's results so Enter can't pick a hidden, stale user.
+    setResults([]);
+    setActive(-1);
     setSearching(true);
     const timer = setTimeout(() => {
       searchUsers(query, controller.signal).then(
@@ -117,7 +120,7 @@ export function UserSearch({ value, onChange, placeholder = "Search users…", a
       e.preventDefault();
       setActive((i) => Math.max(i - 1, 0));
     } else if (e.key === "Enter") {
-      if (open && results[active]) {
+      if (open && !searching && results[active]) {
         e.preventDefault();
         pick(results[active]);
       }
