@@ -2,10 +2,10 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createPost, getPost, updatePost } from "../api/posts";
 import { ErrorMessage, Loading } from "../components/Status";
+import { UserSearch } from "../components/UserSearch";
 import { useStore } from "../store";
 import type { PostInput } from "../types";
 import { DEMO_NOTE, isLocalOnly } from "../usePostActions";
-import { useUsers } from "../useUsers";
 
 const empty: PostInput = { userId: 1, title: "", body: "" };
 
@@ -14,7 +14,6 @@ export function PostForm() {
   const editId = params.id ? Number(params.id) : undefined;
   const navigate = useNavigate();
   const { findLocal, addCreated, saveEdited, setNotice } = useStore();
-  const { users } = useUsers();
 
   const [values, setValues] = useState<PostInput>(empty);
   const [loadError, setLoadError] = useState<Error>();
@@ -68,14 +67,11 @@ export function PostForm() {
       <h1>{editId === undefined ? "New post" : `Edit post #${editId}`}</h1>
       <label>
         User
-        <select value={values.userId} onChange={(e) => setValues({ ...values, userId: Number(e.target.value) })}>
-          {users.length === 0 && <option value={values.userId}>User {values.userId}</option>}
-          {users.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
+        <UserSearch
+          value={values.userId}
+          onChange={(id) => id !== undefined && setValues((v) => ({ ...v, userId: id }))}
+          required
+        />
       </label>
       <label>
         Title

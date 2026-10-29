@@ -2,10 +2,10 @@ import { useSearchParams } from "react-router-dom";
 import { listPosts } from "../api/posts";
 import { PostCard } from "../components/PostCard";
 import { ErrorMessage, Loading } from "../components/Status";
+import { UserSearch } from "../components/UserSearch";
 import { useStore } from "../store";
 import { useAsync } from "../useAsync";
 import { useDeletePost } from "../usePostActions";
-import { useUsers } from "../useUsers";
 
 const PAGE_SIZE = 10;
 
@@ -15,7 +15,6 @@ export function PostsList() {
   const userId = Number(params.get("userId")) || undefined;
   const { created, applyLocal, deleted } = useStore();
   const { remove, deletingId } = useDeletePost();
-  const { users } = useUsers();
 
   const { data, error, loading } = useAsync(() => listPosts({ page, limit: PAGE_SIZE, userId }), [page, userId]);
 
@@ -35,17 +34,13 @@ export function PostsList() {
   return (
     <>
       <div className="toolbar">
-        <label>
-          Filter by user{" "}
-          <select value={userId ?? ""} onChange={(e) => update({ userId: Number(e.target.value) || undefined })}>
-            <option value="">All users</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <UserSearch
+          value={userId}
+          onChange={(id) => update({ userId: id })}
+          allowClear
+          placeholder="Filter by user…"
+          aria-label="Filter by user"
+        />
       </div>
 
       {error && <ErrorMessage error={error} />}

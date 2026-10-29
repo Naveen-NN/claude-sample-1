@@ -119,6 +119,55 @@ describe("users API", () => {
     expect(res.body).toEqual([user]);
   });
 
+  describe("search with ?q=", () => {
+    const users = [
+      { id: 1, name: "Leanne Graham", username: "Bret", email: "Sincere@april.biz" },
+      { id: 2, name: "Ervin Howell", username: "Antonette", email: "Shanna@melissa.tv" },
+      { id: 3, name: "Clementine Bauch", username: "Samantha", email: "Nathan@yesenia.net" },
+    ];
+
+    it("filters by name, case-insensitively", async () => {
+      mocked.getUsers.mockResolvedValue(users as never);
+      const res = await request(app).get("/api/users?q=LEANNE");
+      expect(res.status).toBe(200);
+      expect(res.body.map((u: { id: number }) => u.id)).toEqual([1]);
+    });
+
+    it("matches username and email", async () => {
+      mocked.getUsers.mockResolvedValue(users as never);
+      const byUsername = await request(app).get("/api/users?q=antonette");
+      expect(byUsername.body.map((u: { id: number }) => u.id)).toEqual([2]);
+      const byEmail = await request(app).get("/api/users?q=yesenia");
+      expect(byEmail.body.map((u: { id: number }) => u.id)).toEqual([3]);
+    });
+
+    it("returns an empty list when nothing matches", async () => {
+      mocked.getUsers.mockResolvedValue(users as never);
+      const res = await request(app).get("/api/users?q=zzz");
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
+    it("returns all users for a blank query", async () => {
+      mocked.getUsers.mockResolvedValue(users as never);
+      const res = await request(app).get("/api/users?q=%20%20");
+      expect(res.body).toHaveLength(3);
+    });
+
+    it("caps results at 10", async () => {
+      const many = Array.from({ length: 15 }, (_, i) => ({ id: i + 1, name: `User ${i + 1}`, username: "u", email: "e" }));
+      mocked.getUsers.mockResolvedValue(many as never);
+      const res = await request(app).get("/api/users?q=user");
+      expect(res.body).toHaveLength(10);
+    });
+
+    it("rejects an over-long query", async () => {
+      const res = await request(app).get(`/api/users?q=${"a".repeat(101)}`);
+      expect(res.status).toBe(400);
+      expect(mocked.getUsers).not.toHaveBeenCalled();
+    });
+  });
+
   it("gets one user", async () => {
     mocked.getUser.mockResolvedValue(user as never);
     const res = await request(app).get("/api/users/1");

@@ -32,5 +32,7 @@ Optional server config: copy `server/.env.example` to `server/.env`.
 | PUT | `/api/posts/:id` | Full body |
 | PATCH | `/api/posts/:id` | Partial body |
 | DELETE | `/api/posts/:id` | 204 |
+| GET | `/api/users?q=` | Optional `q` filters by name, username or email (case-insensitive, max 10 results) |
+| GET | `/api/users/:id` | 404 if not found |
 
 Invalid input returns `400` with zod `issues`. Upstream failures return `502`.
